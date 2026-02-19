@@ -1,5 +1,7 @@
 (function(){
 
+function init(){
+
 var size = 70;
 var longPressTime = 350;
 var dragMode = false;
@@ -19,17 +21,12 @@ wrap.style.zIndex = "99999";
 wrap.style.display = "flex";
 wrap.style.flexDirection = "column";
 wrap.style.alignItems = "center";
-wrap.style.transition = "all .25s ease";
 
 var menu = document.createElement("div");
 menu.style.display = "none";
 menu.style.flexDirection = "column";
 menu.style.marginBottom = "12px";
 menu.style.gap = "12px";
-menu.style.opacity = "0";
-menu.style.transition = "opacity .2s ease";
-
-/* ===== 子按鈕 ===== */
 
 function createBtn(link, icon){
 var a = document.createElement("a");
@@ -62,8 +59,6 @@ menu.appendChild(createBtn(
 "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"
 ));
 
-/* ===== 主按鈕 ===== */
-
 var main = document.createElement("div");
 main.innerHTML =
 "<div style='font-size:19px;font-weight:900;color:#fff;'>999</div>"+
@@ -79,24 +74,22 @@ main.style.flexDirection = "column";
 main.style.alignItems = "center";
 main.style.justifyContent = "center";
 main.style.cursor = "pointer";
-main.style.userSelect = "none";
 
 wrap.appendChild(menu);
 wrap.appendChild(main);
 document.body.appendChild(wrap);
 
-/* ===== 記憶位置 ===== */
+/* ===== 點擊開關 ===== */
 
-var saved = localStorage.getItem("floatingPos");
-if(saved){
-var pos = JSON.parse(saved);
-wrap.style.bottom = "auto";
-wrap.style.right = "auto";
-wrap.style.left = pos.x+"px";
-wrap.style.top = pos.y+"px";
+function toggleMenu(){
+if(menu.style.display==="flex"){
+menu.style.display="none";
+}else{
+menu.style.display="flex";
+}
 }
 
-/* ===== 長按進入拖曳模式 ===== */
+/* ===== 長按拖曳 ===== */
 
 main.addEventListener("touchstart", function(e){
 
@@ -104,12 +97,10 @@ var t = e.touches[0];
 startX = t.clientX;
 startY = t.clientY;
 dragging = true;
-moved = false;
 dragMode = false;
 
 pressTimer = setTimeout(function(){
 dragMode = true;
-wrap.style.opacity = "0.85";
 }, longPressTime);
 
 },{passive:false});
@@ -118,30 +109,19 @@ main.addEventListener("touchmove", function(e){
 
 if(!dragging || !dragMode) return;
 
-e.preventDefault();  // 🔥 只有長按後才阻止滑動
+e.preventDefault();
 
 var t = e.touches[0];
 var dx = t.clientX - startX;
 var dy = t.clientY - startY;
 
-if(Math.abs(dx)>4 || Math.abs(dy)>4){
-
-moved = true;
-
-if(!wrap.style.left){
-var rect = wrap.getBoundingClientRect();
-wrap.style.left = rect.left+"px";
-wrap.style.top = rect.top+"px";
-wrap.style.bottom = "auto";
-wrap.style.right = "auto";
-}
-
-wrap.style.left = (wrap.offsetLeft + dx)+"px";
-wrap.style.top = (wrap.offsetTop + dy)+"px";
+wrap.style.bottom="auto";
+wrap.style.right="auto";
+wrap.style.left=(wrap.offsetLeft+dx)+"px";
+wrap.style.top=(wrap.offsetTop+dy)+"px";
 
 startX = t.clientX;
 startY = t.clientY;
-}
 
 },{passive:false});
 
@@ -151,31 +131,26 @@ clearTimeout(pressTimer);
 
 if(!dragMode){
 toggleMenu();
-}else{
-snap();
-savePosition();
 }
 
 dragging = false;
 dragMode = false;
-wrap.style.opacity = "1";
 
 });
 
-/* ===== 桌機拖曳 ===== */
+/* 桌機 */
 
-main.onmousedown = function(e){
-dragMode = true;
-dragging = true;
-startX = e.clientX;
-startY = e.clientY;
+main.onmousedown=function(e){
+dragMode=true;
+dragging=true;
+startX=e.clientX;
+startY=e.clientY;
 };
 
-document.onmousemove = function(e){
+document.onmousemove=function(e){
 if(!dragging || !dragMode) return;
-
-var dx = e.clientX - startX;
-var dy = e.clientY - startY;
+var dx=e.clientX-startX;
+var dy=e.clientY-startY;
 
 wrap.style.bottom="auto";
 wrap.style.right="auto";
@@ -186,57 +161,19 @@ startX=e.clientX;
 startY=e.clientY;
 };
 
-document.onmouseup = function(){
-if(dragMode){
-snap();
-savePosition();
-}
+document.onmouseup=function(){
 dragging=false;
 dragMode=false;
 };
 
-/* ===== 吸附邊緣 ===== */
+}
 
-function snap(){
-var maxX = window.innerWidth - size;
-var current = wrap.offsetLeft;
+/* 🔥 關鍵：等 DOM Ready */
 
-if(current < maxX/2){
-wrap.style.left="0px";
+if(document.readyState==="loading"){
+document.addEventListener("DOMContentLoaded", init);
 }else{
-wrap.style.left=maxX+"px";
+init();
 }
-}
-
-/* ===== 記憶位置 ===== */
-
-function savePosition(){
-var rect = wrap.getBoundingClientRect();
-localStorage.setItem("floatingPos", JSON.stringify({
-x: rect.left,
-y: rect.top
-}));
-}
-
-/* ===== 展開收起 ===== */
-
-function toggleMenu(){
-if(menu.style.display==="flex"){
-menu.style.opacity="0";
-setTimeout(function(){menu.style.display="none";},200);
-}else{
-menu.style.display="flex";
-setTimeout(function(){menu.style.opacity="1";},10);
-}
-}
-
-/* 點外部收起 */
-
-document.addEventListener("click", function(e){
-if(!wrap.contains(e.target)){
-menu.style.opacity="0";
-setTimeout(function(){menu.style.display="none";},200);
-}
-});
 
 })();
