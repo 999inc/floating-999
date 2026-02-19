@@ -2,6 +2,8 @@
 
 var size = 72;
 
+/* ===== 建立主容器 ===== */
+
 var wrap = document.createElement("div");
 wrap.style.position = "fixed";
 wrap.style.bottom = "26px";
@@ -19,6 +21,8 @@ menu.style.marginBottom = "14px";
 menu.style.gap = "14px";
 menu.style.opacity = "0";
 menu.style.transition = "opacity 0.25s ease";
+
+/* ===== 子按鈕 ===== */
 
 function createBtn(link, icon){
 var btn = document.createElement("a");
@@ -55,6 +59,8 @@ return btn;
 menu.appendChild(createBtn("http://lin.ee/jVmFlGq","https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg"));
 menu.appendChild(createBtn("https://t.me/online_999_services","https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"));
 
+/* ===== 主按鈕 ===== */
+
 var mainBtn = document.createElement("div");
 
 mainBtn.innerHTML =
@@ -88,7 +94,7 @@ wrap.style.left = pos.x + "px";
 wrap.style.top = pos.y + "px";
 }
 
-/* ===== 拖曳 ===== */
+/* ===== 拖曳邏輯 ===== */
 
 var dragging = false;
 var moved = false;
@@ -157,7 +163,7 @@ setTimeout(function(){menu.style.opacity="1";},10);
 }
 }
 
-/* 桌機 */
+/* ===== 桌機 ===== */
 
 mainBtn.onmousedown=function(e){
 start(e.clientX,e.clientY);
@@ -187,30 +193,33 @@ wrap.style.opacity="1";
 dragging=false;
 };
 
-/* 手機 */
+/* ===== 手機（重點修正） ===== */
 
 mainBtn.ontouchstart=function(e){
 var t=e.touches[0];
 start(t.clientX,t.clientY);
 };
 
-document.ontouchmove=function(e){
+document.addEventListener("touchmove", function(e){
 if(dragging){
 e.preventDefault();
 var t=e.touches[0];
 move(t.clientX,t.clientY);
 }
-};
+}, { passive:false });
 
-document.ontouchend=function(){
+document.addEventListener("touchend", function(){
+
 if(dragging && moved){
 snap();
 save();
 }else if(dragging && !moved){
 toggle();
 }
+
 wrap.style.opacity="1";
 dragging=false;
-};
+
+});
 
 })();
