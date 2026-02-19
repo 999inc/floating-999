@@ -85,7 +85,6 @@ main.style.cursor = "pointer";
 main.style.userSelect = "none";
 main.style.touchAction = "none";
 
-
 wrap.appendChild(menu);
 wrap.appendChild(main);
 document.body.appendChild(wrap);
@@ -100,7 +99,7 @@ currentY = pos.y;
 updatePosition();
 }
 
-/* ===== 更新位置（GPU） ===== */
+/* ===== 更新位置 ===== */
 
 function updatePosition(){
 wrap.style.transform =
@@ -120,6 +119,11 @@ dragMode = false;
 
 pressTimer = setTimeout(function(){
 dragMode = true;
+
+/* 🔥 全局鎖滾動 */
+document.documentElement.style.overflow = "hidden";
+document.body.style.overflow = "hidden";
+
 }, longPressTime);
 
 },{passive:false});
@@ -155,6 +159,10 @@ snapToEdge();
 savePosition();
 }
 
+/* 🔥 解鎖滾動 */
+document.documentElement.style.overflow = "";
+document.body.style.overflow = "";
+
 dragging = false;
 dragMode = false;
 
@@ -167,6 +175,10 @@ dragMode = true;
 dragging = true;
 startX = e.clientX;
 startY = e.clientY;
+
+/* 鎖滾動 */
+document.documentElement.style.overflow = "hidden";
+document.body.style.overflow = "hidden";
 };
 
 document.onmousemove = function(e){
@@ -189,6 +201,11 @@ if(dragMode){
 snapToEdge();
 savePosition();
 }
+
+/* 解鎖 */
+document.documentElement.style.overflow = "";
+document.body.style.overflow = "";
+
 dragging = false;
 dragMode = false;
 };
