@@ -94,33 +94,38 @@ wrap.style.left = pos.x + "px";
 wrap.style.top = pos.y + "px";
 }
 
-/* ===== 拖曳（純 touch + 滑動阻止） ===== */
+/* ===== 拖曳（強制非 passive） ===== */
 
 var dragging = false;
 var moved = false;
 var startX = 0;
 var startY = 0;
 
-mainBtn.ontouchstart = function(e){
+mainBtn.addEventListener("touchstart", function(e){
+
 var t = e.touches[0];
 dragging = true;
 moved = false;
 startX = t.clientX;
 startY = t.clientY;
-wrap.style.opacity = "0.8";
+wrap.style.opacity = "0.85";
 clearTimeout(idleTimer);
-};
 
-mainBtn.ontouchmove = function(e){
+}, { passive:false });
+
+
+mainBtn.addEventListener("touchmove", function(e){
+
 if(!dragging) return;
 
-e.preventDefault();   // 🔥 關鍵：阻止頁面滑動
+e.preventDefault();   // 🔥 關鍵阻止滑動
 
 var t = e.touches[0];
 var dx = t.clientX - startX;
 var dy = t.clientY - startY;
 
 if(Math.abs(dx)>4 || Math.abs(dy)>4){
+
 moved = true;
 
 wrap.style.bottom = "auto";
@@ -143,9 +148,11 @@ wrap.style.top = newY + "px";
 startX = t.clientX;
 startY = t.clientY;
 }
-};
 
-mainBtn.ontouchend = function(){
+}, { passive:false });
+
+
+mainBtn.addEventListener("touchend", function(){
 
 if(moved){
 snap();
@@ -156,7 +163,10 @@ toggle();
 
 wrap.style.opacity="1";
 dragging=false;
-};
+
+}, { passive:false });
+
+/* ===== 吸附與特效 ===== */
 
 function snap(){
 var maxX = window.innerWidth - size;
