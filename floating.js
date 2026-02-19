@@ -1,7 +1,7 @@
 (function(){
 
 var size = 72;
-var body = document.body;
+var html = document.documentElement;
 
 /* ===== 建立容器 ===== */
 
@@ -23,7 +23,7 @@ menu.style.gap = "14px";
 menu.style.opacity = "0";
 menu.style.transition = "opacity 0.25s ease";
 
-/* ===== 子按鈕 ===== */
+/* 子按鈕 */
 
 function createBtn(link, icon){
 var btn = document.createElement("a");
@@ -36,7 +36,6 @@ btn.style.background = "radial-gradient(circle at 30% 30%,#1c1c1c,#000)";
 btn.style.display = "flex";
 btn.style.alignItems = "center";
 btn.style.justifyContent = "center";
-btn.style.boxShadow = "0 5px 14px rgba(0,0,0,0.7)";
 
 var inner = document.createElement("div");
 inner.style.width = "34px";
@@ -60,7 +59,7 @@ return btn;
 menu.appendChild(createBtn("http://lin.ee/jVmFlGq","https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg"));
 menu.appendChild(createBtn("https://t.me/online_999_services","https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"));
 
-/* ===== 主按鈕 ===== */
+/* 主按鈕 */
 
 var mainBtn = document.createElement("div");
 
@@ -85,7 +84,7 @@ wrap.appendChild(menu);
 wrap.appendChild(mainBtn);
 document.body.appendChild(wrap);
 
-/* ===== 記憶位置 ===== */
+/* 記憶位置 */
 
 var saved = localStorage.getItem("floatingPos");
 if(saved){
@@ -96,7 +95,7 @@ wrap.style.left = pos.x + "px";
 wrap.style.top = pos.y + "px";
 }
 
-/* ===== 拖曳 ===== */
+/* 拖曳 */
 
 var dragging = false;
 var moved = false;
@@ -109,7 +108,7 @@ moved = false;
 startX = x;
 startY = y;
 wrap.style.opacity = "0.7";
-body.style.overflow = "hidden";   // 🔒 鎖頁面
+html.style.overflow = "hidden";   // 🔒 真正鎖整頁
 }
 
 function move(x,y){
@@ -191,7 +190,7 @@ setTimeout(function(){menu.style.display="none";},200);
 }
 
 wrap.style.opacity="1";
-body.style.overflow = "";   // 🔓 解鎖頁面
+html.style.overflow = "";   // 🔓 解鎖
 dragging=false;
 };
 
