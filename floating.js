@@ -79,6 +79,9 @@ mainBtn.style.justifyContent = "center";
 mainBtn.style.cursor = "pointer";
 mainBtn.style.fontWeight = "900";
 
+/* 手機關鍵修正 */
+mainBtn.style.touchAction = "none";
+
 wrap.appendChild(menu);
 wrap.appendChild(mainBtn);
 document.body.appendChild(wrap);
@@ -193,22 +196,22 @@ wrap.style.opacity="1";
 dragging=false;
 };
 
-/* ===== 手機（重點修正） ===== */
+/* ===== 手機 ===== */
 
 mainBtn.ontouchstart=function(e){
 var t=e.touches[0];
 start(t.clientX,t.clientY);
 };
 
-document.addEventListener("touchmove", function(e){
+mainBtn.ontouchmove=function(e){
 if(dragging){
 e.preventDefault();
 var t=e.touches[0];
 move(t.clientX,t.clientY);
 }
-}, { passive:false });
+};
 
-document.addEventListener("touchend", function(){
+mainBtn.ontouchend=function(){
 
 if(dragging && moved){
 snap();
@@ -220,6 +223,6 @@ toggle();
 wrap.style.opacity="1";
 dragging=false;
 
-});
+};
 
 })();
