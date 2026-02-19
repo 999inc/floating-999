@@ -1,6 +1,7 @@
 (function(){
 
 var size = 72;
+var body = document.body;
 
 /* ===== 建立容器 ===== */
 
@@ -78,8 +79,6 @@ mainBtn.style.alignItems = "center";
 mainBtn.style.justifyContent = "center";
 mainBtn.style.cursor = "pointer";
 mainBtn.style.fontWeight = "900";
-
-/* 關鍵：完全關閉瀏覽器手勢 */
 mainBtn.style.touchAction = "none";
 
 wrap.appendChild(menu);
@@ -97,7 +96,7 @@ wrap.style.left = pos.x + "px";
 wrap.style.top = pos.y + "px";
 }
 
-/* ===== 拖曳（Pointer 版） ===== */
+/* ===== 拖曳 ===== */
 
 var dragging = false;
 var moved = false;
@@ -110,6 +109,7 @@ moved = false;
 startX = x;
 startY = y;
 wrap.style.opacity = "0.7";
+body.style.overflow = "hidden";   // 🔒 鎖頁面
 }
 
 function move(x,y){
@@ -166,8 +166,6 @@ setTimeout(function(){menu.style.opacity="1";},10);
 }
 }
 
-/* Pointer 事件 */
-
 mainBtn.onpointerdown=function(e){
 start(e.clientX,e.clientY);
 };
@@ -193,6 +191,7 @@ setTimeout(function(){menu.style.display="none";},200);
 }
 
 wrap.style.opacity="1";
+body.style.overflow = "";   // 🔓 解鎖頁面
 dragging=false;
 };
 
