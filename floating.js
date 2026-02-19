@@ -83,6 +83,8 @@ main.style.alignItems = "center";
 main.style.justifyContent = "center";
 main.style.cursor = "pointer";
 main.style.userSelect = "none";
+main.style.touchAction = "none";
+
 
 wrap.appendChild(menu);
 wrap.appendChild(main);
