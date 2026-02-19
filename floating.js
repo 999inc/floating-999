@@ -1,7 +1,21 @@
 (function(){
 
 var size = 72;
-var html = document.documentElement;
+
+/* ===== 找到真正滾動容器 ===== */
+
+function getScrollParent(){
+var el = document.body;
+while(el){
+if(el.scrollHeight > el.clientHeight){
+return el;
+}
+el = el.parentElement;
+}
+return document.body;
+}
+
+var scrollContainer = getScrollParent();
 
 /* ===== 建立容器 ===== */
 
@@ -102,13 +116,21 @@ var moved = false;
 var startX = 0;
 var startY = 0;
 
+function lockScroll(){
+scrollContainer.style.overflow = "hidden";
+}
+
+function unlockScroll(){
+scrollContainer.style.overflow = "";
+}
+
 function start(x,y){
 dragging = true;
 moved = false;
 startX = x;
 startY = y;
 wrap.style.opacity = "0.7";
-html.style.overflow = "hidden";   // 🔒 真正鎖整頁
+lockScroll();
 }
 
 function move(x,y){
@@ -190,7 +212,7 @@ setTimeout(function(){menu.style.display="none";},200);
 }
 
 wrap.style.opacity="1";
-html.style.overflow = "";   // 🔓 解鎖
+unlockScroll();
 dragging=false;
 };
 
