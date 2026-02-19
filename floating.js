@@ -2,7 +2,7 @@
 
 var size = 72;
 
-/* ===== 建立主容器 ===== */
+/* ===== 建立容器 ===== */
 
 var wrap = document.createElement("div");
 wrap.style.position = "fixed";
@@ -79,7 +79,7 @@ mainBtn.style.justifyContent = "center";
 mainBtn.style.cursor = "pointer";
 mainBtn.style.fontWeight = "900";
 
-/* 手機關鍵修正 */
+/* 關鍵：完全關閉瀏覽器手勢 */
 mainBtn.style.touchAction = "none";
 
 wrap.appendChild(menu);
@@ -97,7 +97,7 @@ wrap.style.left = pos.x + "px";
 wrap.style.top = pos.y + "px";
 }
 
-/* ===== 拖曳邏輯 ===== */
+/* ===== 拖曳（Pointer 版） ===== */
 
 var dragging = false;
 var moved = false;
@@ -166,17 +166,17 @@ setTimeout(function(){menu.style.opacity="1";},10);
 }
 }
 
-/* ===== 桌機 ===== */
+/* Pointer 事件 */
 
-mainBtn.onmousedown=function(e){
+mainBtn.onpointerdown=function(e){
 start(e.clientX,e.clientY);
 };
 
-document.onmousemove=function(e){
+document.onpointermove=function(e){
 move(e.clientX,e.clientY);
 };
 
-document.onmouseup=function(e){
+document.onpointerup=function(e){
 
 if(dragging && moved){
 snap();
@@ -194,35 +194,6 @@ setTimeout(function(){menu.style.display="none";},200);
 
 wrap.style.opacity="1";
 dragging=false;
-};
-
-/* ===== 手機 ===== */
-
-mainBtn.ontouchstart=function(e){
-var t=e.touches[0];
-start(t.clientX,t.clientY);
-};
-
-mainBtn.ontouchmove=function(e){
-if(dragging){
-e.preventDefault();
-var t=e.touches[0];
-move(t.clientX,t.clientY);
-}
-};
-
-mainBtn.ontouchend=function(){
-
-if(dragging && moved){
-snap();
-save();
-}else if(dragging && !moved){
-toggle();
-}
-
-wrap.style.opacity="1";
-dragging=false;
-
 };
 
 })();
