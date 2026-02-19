@@ -1,86 +1,88 @@
 (function(){
 
-var size = 72;
-var idleTimer;
+var size = 70;
+var longPressTime = 350;
+var dragMode = false;
+var dragging = false;
+var moved = false;
+var startX = 0;
+var startY = 0;
+var pressTimer = null;
 
 /* ===== 建立容器 ===== */
 
 var wrap = document.createElement("div");
 wrap.style.position = "fixed";
-wrap.style.bottom = "26px";
-wrap.style.right = "26px";
+wrap.style.bottom = "24px";
+wrap.style.right = "24px";
 wrap.style.zIndex = "99999";
 wrap.style.display = "flex";
 wrap.style.flexDirection = "column";
 wrap.style.alignItems = "center";
-wrap.style.transition = "all 0.3s ease";
+wrap.style.transition = "all .25s ease";
 
 var menu = document.createElement("div");
 menu.style.display = "none";
 menu.style.flexDirection = "column";
-menu.style.marginBottom = "14px";
-menu.style.gap = "14px";
+menu.style.marginBottom = "12px";
+menu.style.gap = "12px";
 menu.style.opacity = "0";
-menu.style.transition = "opacity 0.25s ease";
+menu.style.transition = "opacity .2s ease";
 
 /* ===== 子按鈕 ===== */
 
 function createBtn(link, icon){
-var btn = document.createElement("a");
-btn.href = link;
-btn.target = "_blank";
-btn.style.width = "60px";
-btn.style.height = "60px";
-btn.style.borderRadius = "50%";
-btn.style.background = "radial-gradient(circle at 30% 30%,#1c1c1c,#000)";
-btn.style.display = "flex";
-btn.style.alignItems = "center";
-btn.style.justifyContent = "center";
-
-var inner = document.createElement("div");
-inner.style.width = "34px";
-inner.style.height = "34px";
-inner.style.borderRadius = "50%";
-inner.style.background = "#fff";
-inner.style.display = "flex";
-inner.style.alignItems = "center";
-inner.style.justifyContent = "center";
+var a = document.createElement("a");
+a.href = link;
+a.target = "_blank";
+a.style.width = "56px";
+a.style.height = "56px";
+a.style.borderRadius = "50%";
+a.style.background = "#000";
+a.style.display = "flex";
+a.style.alignItems = "center";
+a.style.justifyContent = "center";
 
 var img = document.createElement("img");
 img.src = icon;
-img.style.width = "18px";
-img.style.height = "18px";
+img.style.width = "20px";
+img.style.height = "20px";
 
-inner.appendChild(img);
-btn.appendChild(inner);
-return btn;
+a.appendChild(img);
+return a;
 }
 
-menu.appendChild(createBtn("http://lin.ee/jVmFlGq","https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg"));
-menu.appendChild(createBtn("https://t.me/online_999_services","https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"));
+menu.appendChild(createBtn(
+"http://lin.ee/jVmFlGq",
+"https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg"
+));
+
+menu.appendChild(createBtn(
+"https://t.me/online_999_services",
+"https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"
+));
 
 /* ===== 主按鈕 ===== */
 
-var mainBtn = document.createElement("div");
+var main = document.createElement("div");
+main.innerHTML =
+"<div style='font-size:19px;font-weight:900;color:#fff;'>999</div>"+
+"<div style='font-size:11px;color:#C8A84A;'>ONLINE</div>";
 
-mainBtn.innerHTML =
-"<span style='font-size:18px;color:#FFF7D6;line-height:16px;'>999</span>" +
-"<span style='font-size:11px;color:#C8A84A;line-height:12px;'>ONLINE</span>";
-
-mainBtn.style.width = size + "px";
-mainBtn.style.height = size + "px";
-mainBtn.style.borderRadius = "50%";
-mainBtn.style.background = "radial-gradient(circle at 40% 22%,#555,#000)";
-mainBtn.style.border = "2px solid #F0CF74";
-mainBtn.style.display = "flex";
-mainBtn.style.flexDirection = "column";
-mainBtn.style.alignItems = "center";
-mainBtn.style.justifyContent = "center";
-mainBtn.style.cursor = "pointer";
-mainBtn.style.fontWeight = "900";
+main.style.width = size+"px";
+main.style.height = size+"px";
+main.style.borderRadius = "50%";
+main.style.background = "#111";
+main.style.border = "2px solid #F0CF74";
+main.style.display = "flex";
+main.style.flexDirection = "column";
+main.style.alignItems = "center";
+main.style.justifyContent = "center";
+main.style.cursor = "pointer";
+main.style.userSelect = "none";
 
 wrap.appendChild(menu);
-wrap.appendChild(mainBtn);
+wrap.appendChild(main);
 document.body.appendChild(wrap);
 
 /* ===== 記憶位置 ===== */
@@ -90,35 +92,33 @@ if(saved){
 var pos = JSON.parse(saved);
 wrap.style.bottom = "auto";
 wrap.style.right = "auto";
-wrap.style.left = pos.x + "px";
-wrap.style.top = pos.y + "px";
+wrap.style.left = pos.x+"px";
+wrap.style.top = pos.y+"px";
 }
 
-/* ===== 拖曳（強制非 passive） ===== */
+/* ===== 長按進入拖曳模式 ===== */
 
-var dragging = false;
-var moved = false;
-var startX = 0;
-var startY = 0;
-
-mainBtn.addEventListener("touchstart", function(e){
+main.addEventListener("touchstart", function(e){
 
 var t = e.touches[0];
-dragging = true;
-moved = false;
 startX = t.clientX;
 startY = t.clientY;
+dragging = true;
+moved = false;
+dragMode = false;
+
+pressTimer = setTimeout(function(){
+dragMode = true;
 wrap.style.opacity = "0.85";
-clearTimeout(idleTimer);
+}, longPressTime);
 
-}, { passive:false });
+},{passive:false});
 
+main.addEventListener("touchmove", function(e){
 
-mainBtn.addEventListener("touchmove", function(e){
+if(!dragging || !dragMode) return;
 
-if(!dragging) return;
-
-e.preventDefault();   // 🔥 關鍵阻止滑動
+e.preventDefault();  // 🔥 只有長按後才阻止滑動
 
 var t = e.touches[0];
 var dx = t.clientX - startX;
@@ -128,65 +128,89 @@ if(Math.abs(dx)>4 || Math.abs(dy)>4){
 
 moved = true;
 
+if(!wrap.style.left){
+var rect = wrap.getBoundingClientRect();
+wrap.style.left = rect.left+"px";
+wrap.style.top = rect.top+"px";
 wrap.style.bottom = "auto";
 wrap.style.right = "auto";
+}
 
-var maxX = window.innerWidth - size;
-var maxY = window.innerHeight - size;
-
-var newX = (parseInt(wrap.style.left)|| (window.innerWidth-size-26)) + dx;
-var newY = (parseInt(wrap.style.top)|| (window.innerHeight-size-26)) + dy;
-
-if(newX<0)newX=0;
-if(newY<0)newY=0;
-if(newX>maxX)newX=maxX;
-if(newY>maxY)newY=maxY;
-
-wrap.style.left = newX + "px";
-wrap.style.top = newY + "px";
+wrap.style.left = (wrap.offsetLeft + dx)+"px";
+wrap.style.top = (wrap.offsetTop + dy)+"px";
 
 startX = t.clientX;
 startY = t.clientY;
 }
 
-}, { passive:false });
+},{passive:false});
 
+main.addEventListener("touchend", function(){
 
-mainBtn.addEventListener("touchend", function(){
+clearTimeout(pressTimer);
 
-if(moved){
-snap();
-save();
+if(!dragMode){
+toggleMenu();
 }else{
-toggle();
+snap();
+savePosition();
 }
 
-wrap.style.opacity="1";
+dragging = false;
+dragMode = false;
+wrap.style.opacity = "1";
+
+});
+
+/* ===== 桌機拖曳 ===== */
+
+main.onmousedown = function(e){
+dragMode = true;
+dragging = true;
+startX = e.clientX;
+startY = e.clientY;
+};
+
+document.onmousemove = function(e){
+if(!dragging || !dragMode) return;
+
+var dx = e.clientX - startX;
+var dy = e.clientY - startY;
+
+wrap.style.bottom="auto";
+wrap.style.right="auto";
+wrap.style.left=(wrap.offsetLeft+dx)+"px";
+wrap.style.top=(wrap.offsetTop+dy)+"px";
+
+startX=e.clientX;
+startY=e.clientY;
+};
+
+document.onmouseup = function(){
+if(dragMode){
+snap();
+savePosition();
+}
 dragging=false;
+dragMode=false;
+};
 
-}, { passive:false });
-
-/* ===== 吸附與特效 ===== */
+/* ===== 吸附邊緣 ===== */
 
 function snap(){
 var maxX = window.innerWidth - size;
-var current = parseInt(wrap.style.left)||0;
+var current = wrap.offsetLeft;
 
 if(current < maxX/2){
-wrap.style.left = "0px";
+wrap.style.left="0px";
 }else{
-wrap.style.left = maxX + "px";
+wrap.style.left=maxX+"px";
+}
 }
 
-wrap.style.transform="scale(0.85)";
-wrap.style.opacity="0.6";
+/* ===== 記憶位置 ===== */
 
-idleTimer=setTimeout(function(){
-wrap.style.opacity="0.4";
-},3000);
-}
-
-function save(){
+function savePosition(){
 var rect = wrap.getBoundingClientRect();
 localStorage.setItem("floatingPos", JSON.stringify({
 x: rect.left,
@@ -194,7 +218,9 @@ y: rect.top
 }));
 }
 
-function toggle(){
+/* ===== 展開收起 ===== */
+
+function toggleMenu(){
 if(menu.style.display==="flex"){
 menu.style.opacity="0";
 setTimeout(function(){menu.style.display="none";},200);
@@ -203,5 +229,14 @@ menu.style.display="flex";
 setTimeout(function(){menu.style.opacity="1";},10);
 }
 }
+
+/* 點外部收起 */
+
+document.addEventListener("click", function(e){
+if(!wrap.contains(e.target)){
+menu.style.opacity="0";
+setTimeout(function(){menu.style.display="none";},200);
+}
+});
 
 })();
