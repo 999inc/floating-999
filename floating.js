@@ -2,21 +2,6 @@
 
 var size = 72;
 
-/* ===== 找到真正滾動容器 ===== */
-
-function getScrollParent(){
-var el = document.body;
-while(el){
-if(el.scrollHeight > el.clientHeight){
-return el;
-}
-el = el.parentElement;
-}
-return document.body;
-}
-
-var scrollContainer = getScrollParent();
-
 /* ===== 建立容器 ===== */
 
 var wrap = document.createElement("div");
@@ -37,7 +22,7 @@ menu.style.gap = "14px";
 menu.style.opacity = "0";
 menu.style.transition = "opacity 0.25s ease";
 
-/* 子按鈕 */
+/* ===== 子按鈕 ===== */
 
 function createBtn(link, icon){
 var btn = document.createElement("a");
@@ -73,7 +58,7 @@ return btn;
 menu.appendChild(createBtn("http://lin.ee/jVmFlGq","https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg"));
 menu.appendChild(createBtn("https://t.me/online_999_services","https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"));
 
-/* 主按鈕 */
+/* ===== 主按鈕 ===== */
 
 var mainBtn = document.createElement("div");
 
@@ -92,13 +77,12 @@ mainBtn.style.alignItems = "center";
 mainBtn.style.justifyContent = "center";
 mainBtn.style.cursor = "pointer";
 mainBtn.style.fontWeight = "900";
-mainBtn.style.touchAction = "none";
 
 wrap.appendChild(menu);
 wrap.appendChild(mainBtn);
 document.body.appendChild(wrap);
 
-/* 記憶位置 */
+/* ===== 記憶位置 ===== */
 
 var saved = localStorage.getItem("floatingPos");
 if(saved){
@@ -109,28 +93,19 @@ wrap.style.left = pos.x + "px";
 wrap.style.top = pos.y + "px";
 }
 
-/* 拖曳 */
+/* ===== 拖曳（乾淨 pointer 版本） ===== */
 
 var dragging = false;
 var moved = false;
 var startX = 0;
 var startY = 0;
 
-function lockScroll(){
-scrollContainer.style.overflow = "hidden";
-}
-
-function unlockScroll(){
-scrollContainer.style.overflow = "";
-}
-
 function start(x,y){
 dragging = true;
 moved = false;
 startX = x;
 startY = y;
-wrap.style.opacity = "0.7";
-lockScroll();
+wrap.style.opacity = "0.8";
 }
 
 function move(x,y){
@@ -212,7 +187,6 @@ setTimeout(function(){menu.style.display="none";},200);
 }
 
 wrap.style.opacity="1";
-unlockScroll();
 dragging=false;
 };
 
