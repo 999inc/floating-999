@@ -1,1 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  background:transparent;
+  overflow:hidden;
+}
+
+/* 主按鈕 */
+#vip-cta{
+  position:fixed;
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #1c1c1c, #000);
+  border:2px solid #d4af37;
+  box-shadow:
+    0 0 18px rgba(212,175,55,.5),
+    inset 0 0 18px rgba(0,0,0,.8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:Arial, sans-serif;
+  cursor:pointer;
+  user-select:none;
+  touch-action:none;
+  z-index:9999;
+  right:20px;
+  bottom:20px;
+  transition:.25s ease;
+}
+
+/* 999 字 */
+#vip-cta .big{
+  font-size:22px;
+  font-weight:900;
+  background:linear-gradient(#f6e27a,#d4af37);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:1px;
+}
+
+/* ONLINE 字 */
+#vip-cta .small{
+  font-size:10px;
+  color:#d4af37;
+  letter-spacing:1.5px;
+}
+
+/* 子按鈕容器 */
+#vip-menu{
+  position:fixed;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  right:24px;
+  bottom:110px;
+  z-index:9998;
+}
+
+/* 子按鈕 */
+.vip-child{
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #111, #000);
+  border:2px solid #d4af37;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 15px rgba(212,175,55,.4);
+}
+
+.vip-child img{
+  width:28px;
+  height:28px;
+}
+
+</style>
+</head>
+<body>
+
+<div id="vip-cta">
+  <div style="text-align:center;">
+    <div class="big">999</div>
+    <div class="small">ONLINE</div>
+  </div>
+</div>
+
+<div id="vip-menu">
+  <a href="http://lin.ee/jVmFlGq" target="_blank" class="vip-child">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg">
+  </a>
+  <a href="https://t.me/online_999_services" target="_blank" class="vip-child">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
+  </a>
+</div>
+
+<script>
+(function(){
+
+const cta=document.getElementById("vip-cta");
+const menu=document.getElementById("vip-menu");
+
+let dragging=false;
+let moved=false;
+let offsetX,offsetY;
+
+/* 拖曳開始 */
+cta.addEventListener("pointerdown",e=>{
+  dragging=true;
+  moved=false;
+  const rect=cta.getBoundingClientRect();
+  offsetX=e.clientX-rect.left;
+  offsetY=e.clientY-rect.top;
+  cta.setPointerCapture(e.pointerId);
+});
+
+/* 拖曳移動 */
+cta.addEventListener("pointermove",e=>{
+  if(!dragging)return;
+  moved=true;
+  const x=e.clientX-offsetX;
+  const y=e.clientY-offsetY;
+  cta.style.left=x+"px";
+  cta.style.top=y+"px";
+  cta.style.right="auto";
+  cta.style.bottom="auto";
+  menu.style.left=(x+6)+"px";
+  menu.style.top=(y-90)+"px";
+  menu.style.right="auto";
+  menu.style.bottom="auto";
+});
+
+/* 拖曳結束 */
+cta.addEventListener("pointerup",e=>{
+  dragging=false;
+  cta.releasePointerCapture(e.pointerId);
+  if(!moved){
+    menu.style.display=
+      menu.style.display==="flex"?"none":"flex";
+  }
+});
+
+/* 手機防滑 */
+document.addEventListener("touchmove",function(e){
+  if(dragging)e.preventDefault();
+},{passive:false});
+
+})();
+</script>
+
+</body>
+</html>
 
